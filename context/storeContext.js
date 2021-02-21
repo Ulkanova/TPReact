@@ -15,6 +15,11 @@ export const StoreProvider = ({children}) => {
     {nombre: 'Categoria 4', color: 'yellow', id: Math.random().toString(10)},
   ]);
   const [categoriasProductos, setCategoriasProductos] = useState({});
+  const [usuarios, setUsuarios] = useState([
+    {nombre: 'Usuario 1', email: 'email@mail.com', id: Math.random().toString(10)},
+    {nombre: 'Usuario 2', email: 'email@mail.com', id: Math.random().toString(10)},
+  ]);
+  const [usuariosProductos, setUsuariosProductos] = useState({});
 
   const fetchData = async () => {
     try {
@@ -41,6 +46,35 @@ export const StoreProvider = ({children}) => {
     }
   };
 
+  const agregarProductoAUsuario = (usuario, producto) => {
+    if (!usuario?.id || !producto?.id) {
+      return; // No hay id de categoria o producto
+    }
+
+    const usuariosProductos = usuariosProductos[usuario.id] ?? [];
+    if (!usuariosProductos.includes(producto.id)) {
+      //Si no esta lo agregamos
+      const newUsuariosProductos = {
+        ...usuariosProductos,
+        [usuarios.id]: [...usuariosProductos, producto.id],
+      };
+      setUsuariosProductos(newUsuariosProductos);
+    }
+  };
+  
+  const quitarProductoDeUsuario = (usuario, producto) => {
+    if (!usuario?.id || !producto?.id) {
+      return; // No hay id de categoria o producto
+    }
+    const usuariosProductos = usuariosProductos[usuario.id] ?? [];
+    if (usuariosProductos.includes(producto.id)) {
+      //Si esta lo quitamos
+      setUsuariosProductos({
+        ...usuariosProductos,
+        [usuarios.id]: usuariosProductos.filter((pid) => pid !== producto.id),
+      });
+    }
+  };
   const quitarProductoDeCategoria = (categoria, producto) => {
     if (!categoria?.id || !producto?.id) {
       return; // No hay id de categoria o producto
@@ -68,6 +102,18 @@ export const StoreProvider = ({children}) => {
     return results;
   };
 
+  const obtenerUsuariosDelProducto = (producto) => {
+    const usuariosId = Object.keys(usuariosProductos);
+    const usuariosIdDelProducto = usuariosId.reduce(
+      (acc, cur) =>
+        usuariosProductos[cur].includes(producto.id) ? [...acc, cur] : acc,
+      [],
+    );
+    const results = usuarios.filter((c) =>
+      usuariosIdDelProducto.includes(c.id),
+    );
+    return results;
+  };
   useEffect(() => {
     fetchData();
   }, []);
@@ -82,6 +128,11 @@ export const StoreProvider = ({children}) => {
         agregarProductoACategoria,
         quitarProductoDeCategoria,
         obtenerCategoriasDelProducto,
+        obtenerUsuariosDelProducto,
+        usuarios,
+        agregarProductoAUsuario,
+        setUsuarios,
+        quitarProductoDeUsuario,
       }}>
       {children}
     </StoreContext.Provider>

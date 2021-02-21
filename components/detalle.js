@@ -6,6 +6,7 @@ import {StoreContext} from '../context/storeContext';
 import {FlatList} from 'react-native-gesture-handler';
 import BottomSheetModal from './bottomSheetModal';
 import SeleccionarCategoria from './seleccionarCategoria';
+import SeleccionarUsuario from './seleccionarUsuario';
 
 const styles = StyleSheet.create({
   container: {
@@ -95,8 +96,11 @@ const Detalle = ({route: {params}, ...props}) => {
   const navigator = useNavigation();
   const {producto} = params;
   const {obtenerCategoriasDelProducto} = useContext(StoreContext);
+  const {obtenerUsuariosDelProducto} = useContext(StoreContext);
   const categorias = obtenerCategoriasDelProducto(producto);
+  const usuarios = obtenerUsuariosDelProducto(producto);
   const [categoriasModal, setCategoriasModal] = useState(false);
+  const [usuariosModal, setUsuariosModal] = useState(false);
 
   return (
     <View style={styles.container}>
@@ -105,6 +109,12 @@ const Detalle = ({route: {params}, ...props}) => {
         onClosePressed={() => setCategoriasModal(false)}
         title="Seleccionar Categoria">
         <SeleccionarCategoria producto={producto} />
+      </BottomSheetModal>
+      <BottomSheetModal
+        visible={usuariosModal}
+        onClosePressed={() => setUsuariosModal(false)}
+        title="Seleccionar Usuario">
+        <SeleccionarUsuario producto={producto} />
       </BottomSheetModal>
       <Text category="h4">{producto.title}</Text>
       <View style={[styles.contenedorImgPrecio]}>
@@ -148,6 +158,14 @@ const Detalle = ({route: {params}, ...props}) => {
         )}
       />
       <View style={styles.form}>
+      <Button
+          appearance="outline"
+          style={styles.btnVolver}
+          onPress={() => {
+            setUsuariosModal(true);
+          }}>
+          AGREGAR USUARIOS
+        </Button>
         <Button
           appearance="outline"
           style={styles.btnVolver}
